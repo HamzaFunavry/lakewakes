@@ -13,6 +13,8 @@
     "@gorhom/bottom-sheet": "^2.3.0",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/masked-view": "^0.1.11",
+    "@react-native-firebase/app": "^12.8.0",
+    "@react-native-firebase/messaging": "^12.8.0",
     "@react-navigation/drawer": "^5.12.5",
     "@react-navigation/native": "^5.9.4",
     "@react-navigation/stack": "^5.14.5",

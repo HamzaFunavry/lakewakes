@@ -54,7 +54,6 @@ export function LoginScreen() {
   const [paymentbody, setpaymentbody] = useState<ProductPurchase>();
   const getProductsFromStore = useGetProductsFromStore(itemSkus, {
     onSuccess(res) {
-      console.log(res);
       setpaymentobj(res[0])
     },
     onError(err) { console.log(err); },
@@ -92,8 +91,6 @@ export function LoginScreen() {
                   transactionId:purchase.transactionId,
                   transactionReceipt:purchase.transactionReceipt
               }
-              console.log(body);
-              console.log(loginres);
               setpaymentbody(body)
               applepayMutation.mutate(body);
           }
@@ -124,7 +121,6 @@ export function LoginScreen() {
   
   const loginUserMutation = useLoginUser({
     onSuccess(res) {
-      console.log(res.data);
       global.token=res.data.token;
       setloginres(res.data);
     },
@@ -135,14 +131,8 @@ export function LoginScreen() {
 
   const applepayMutation = useApplePay({
     onSuccess(res) {
-      console.log('====================================');
-      console.log(loginres);
-      console.log(res);
-      console.log(paymentbody);
-      console.log('====================================');
       RNIap.finishTransaction(paymentbody).then((result)=>{
         dispatch(loginUser(loginres));
-        console.log(result);
       }).catch((err)=>{
         RNIap.clearTransactionIOS();
       })
@@ -152,9 +142,6 @@ export function LoginScreen() {
     },
   });
   useEffect(() => {
-    console.log('==========loginres==========================');
-    console.log(loginres);
-    console.log('============loginres========================');
     if(loginres){
       if(!loginres.paymentStatus){
         setsubmodel(true)

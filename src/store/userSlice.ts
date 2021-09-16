@@ -26,7 +26,6 @@ const initialState: IUserState = {
 // always add unique names to your createAsyncThunk calls !
 
 const loadUserFromStorage = createAsyncThunk('user/loadFromStorage', () => {
-  console.log('dispatched loadFromStorage');
   return AsyncStorage.getItem(userKey);
 });
 
@@ -51,9 +50,7 @@ const userSlice = createSlice({
         loadUserFromStorage.fulfilled,
         (state, action: PayloadAction<string>) => {
           const { payload } = action;
-          console.log(action);
           const user = JSON.parse(payload);
-          console.log(user);
           if (user) {
             state.isLoadingStorageData = false;
             state.isLoggedIn = true;
@@ -63,8 +60,6 @@ const userSlice = createSlice({
             state.isLoggedIn = false;
             state.user = null;
           }
-
-          console.log(state);
         },
       )
       .addCase(loginUser.fulfilled, (state, action: PayloadAction<User>) => {

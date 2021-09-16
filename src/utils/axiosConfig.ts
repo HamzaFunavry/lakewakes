@@ -13,9 +13,7 @@ const excludedUrls = ["/login", "/register","/forgotPassword","/passwordResetOnC
 const applepay=['/applePay'];
 
 instance.interceptors.request.use(async function (config) {
-  console.log(config.url);
   config.timeoutErrorMessage = "Request Timed Out";
-  console.log("Sending Request", config.url);
   if (config.baseURL === SERVER_URL && applepay[0]==config.url){
     config.headers.Authorization = global.token;
   }
