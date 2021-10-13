@@ -25,7 +25,7 @@ import Modal from 'react-native-modal';
 import { finishTransaction, InAppPurchase, ProductPurchase, PurchaseError, purchaseErrorListener, purchaseUpdatedListener, SubscriptionPurchase } from "react-native-iap";
 import { User } from "../../interfaces/LoginResponse";
 import axios from "axios";
-import { useApplePay } from "../../hooks/useApplePay";
+import { useApplePay, useGooglePay } from "../../hooks/useApplePay";
 const itemSkus = Platform.select({
   ios: ['one_time_membership'],
   android: ["lakewakes_995_forever"],
@@ -61,10 +61,19 @@ export function LoginScreen() {
   });
 
   const requestPurchase = async (sku): Promise<void> => {
-    try {
-      RNIap.requestPurchase('one_time_membership');
-    } catch (err) {
-      console.warn(err.code, err.message);
+    if(Platform.OS=='ios'){
+      try {
+        RNIap.requestPurchase('one_time_membership');
+      } catch (err) {
+        console.warn(err.code, err.message);
+      }
+    }
+    else if(Platform.OS=='android'){
+      try {
+        RNIap.requestPurchase('lakewakes_995_forever');
+      } catch (err) {
+        console.warn(err.code, err.message);
+      }
     }
   };
 
@@ -93,6 +102,11 @@ export function LoginScreen() {
               }
               setpaymentbody(body)
               applepayMutation.mutate(body);
+          }
+          else if (Platform.OS === 'android'){
+            await RNIap.acknowledgePurchaseAndroid(purchase.purchaseToken);
+            await RNIap.finishTransaction(purchase, true)
+            googlepayMutation.mutate({ "androidPayment":true });
           }
         }
       },
@@ -131,6 +145,9 @@ export function LoginScreen() {
 
   const applepayMutation = useApplePay({
     onSuccess(res) {
+      console.log('=============res=======================');
+      console.log(res);
+      console.log('=============res=======================');
       RNIap.finishTransaction(paymentbody).then((result)=>{
         dispatch(loginUser(loginres));
       }).catch((err)=>{
@@ -141,6 +158,19 @@ export function LoginScreen() {
       RNIap.clearTransactionIOS();
     },
   });
+
+  const googlepayMutation = useGooglePay({
+    onSuccess(res) {
+      console.log('=============res=======================');
+      console.log(res);
+      console.log('=============res=======================');
+      dispatch(loginUser(loginres));
+    },
+    onError(error: Error) {
+      RNIap.clearTransactionIOS();
+    },
+  });
+
   useEffect(() => {
     if(loginres){
       if(!loginres.paymentStatus){

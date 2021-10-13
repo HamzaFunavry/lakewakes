@@ -392,7 +392,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    flex: 1,
+    flex:1
+  },
+  mapEmergency: {
+    flex:1
   },
   cardview: {
     backgroundColor: "#fff",

@@ -1,12 +1,12 @@
 import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from 'react-query';
 import { ChangePasswordResponse, ForgotPasswordResponse, LoginResponse, RegisterResponse } from '../interfaces/LoginResponse';
 import { http } from '../utils/axiosConfig';
-import { IChangePasswordRequest, IForgotPasswordCodeRequest, IForgotPasswordRequest, ILoginRequest, IRegisterRequest, IUpdateUserRequest } from '../interfaces/LoginRequest';
+import { IChangePasswordRequest, IemergencyRequest, IForgotPasswordCodeRequest, IForgotPasswordRequest, ILoginRequest, IRegisterRequest, IUpdateUserRequest } from '../interfaces/LoginRequest';
 
 
 function loginUserRequest(loginRequest: ILoginRequest) {
   loginRequest.issuperadmin=false;
-	loginRequest.dtoken='';
+	loginRequest.dtoken=global.token;
   return http.post<LoginResponse>('/login', loginRequest).then((res) => {
     if (res.status === 200) {
       return res.data;
@@ -128,3 +128,22 @@ export function useupdateUser(
   return useMutation(updateUserRequest, options);
 }
 
+function emergencyRequest(emergencyRequest: IemergencyRequest) {
+  console.log('sadsd',emergencyRequest);
+  return http.post<any>('/sendNotifications', emergencyRequest).then((res) => {
+    console.log('sadsadwww',res);
+    if (res.status === 200) {
+      return res.data;
+    } else {
+      throw new Error('Could not change. Something went wrong');
+    }
+  }).catch((err)=>{
+    console.warn(err);
+    throw new Error(err.response.data.message);
+  });
+}
+export function useEmergency(
+  options?: UseMutationOptions<any, Error, IemergencyRequest, unknown>,
+) {
+  return useMutation(emergencyRequest, options);
+}

@@ -18,22 +18,17 @@ import {
   Platform,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import MapView, { Marker, Polyline } from "react-native-maps";
+import MapView, { Callout, Marker, Polyline } from "react-native-maps";
 import styles from "../../assets/css/styles";
 import Header from "../../components/Header";
-import {
-  GooglePlaceData,
-  GooglePlaceDetail,
-  GooglePlacesAutocomplete,
-} from "react-native-google-places-autocomplete";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useNavigation } from "@react-navigation/native";
-import SearchPlaces from "./SearchPlaces";
 import Geolocation from "react-native-geolocation-service";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { useGetNearbyPlaces } from "../../hooks/useGetNearbyPlaces";
 import FastImage from "react-native-fast-image";
-import { heightPercentageToDP as hp } from "react-native-responsive-screen"; // final magic
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useEmergency } from "../../hooks/useLoginUser";
 
 type Location = {
   lat: number;
@@ -206,6 +201,37 @@ export default function Maps() {
 
   const keyExtractor = useCallback((item, i) => "" + i, []);
   console.log(geoLocation);
+  const emergencyFun =()=>{
+    Alert.alert('Emergency','Do you want to notify other that you are in emergency?',
+    [
+      {
+        text: "Yes",
+        onPress: () => {
+          emergencyMutation.mutate({
+            longt:geoLocation.coords.longitude.toString(),
+            lat:geoLocation.coords.latitude.toString()
+          });
+        }  
+      },
+      {
+        text: "No",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel"
+      }
+    ]
+    )
+  }
+  const emergencyMutation = useEmergency({
+    onSuccess(res) {
+      console.log('====================================');
+      console.log(res);
+      console.log('====================================');
+      Alert.alert('Emergency Notification','Emergency Notification Send To All Lake Wakes Users.')
+    },
+    onError(error: Error) {
+      Alert.alert(error.message);
+    },
+  });
   return (
     <SafeAreaView style={{flex:1}}>
       <Header pageName={""} />
@@ -306,8 +332,8 @@ export default function Maps() {
           }}
         />
       </View>
+      
       <MapView
-        // provider={PROVIDER_GOOGLE} // remove if not using Google Maps
         style={styles.map}
         region={{
           latitude: startingPosition?.lat ?? geoLocation?.coords.latitude ?? 34.2305586712752,
@@ -318,7 +344,6 @@ export default function Maps() {
         showsMyLocationButton={true}
         showsUserLocation={true}
         showsCompass={true}
-        // minZoomLevel={10}
         rotateEnabled={true}
       >
         {startingPosition && (
@@ -327,7 +352,6 @@ export default function Maps() {
               latitude: startingPosition.lat,
               longitude: startingPosition.long,
             }}
-            // image={require('../../assets/images/pin.png')}
             title="Starting Point"
             pinColor={"#0066b2"}
           />
@@ -353,7 +377,6 @@ export default function Maps() {
               latitude: endingPosition.lat,
               longitude: endingPosition.long,
             }}
-            // image={require('../../assets/images/pin.png')}
             title="Destination Point"
             pinColor={"#FF6347"}
             onDragEnd={(e) => {
@@ -377,20 +400,17 @@ export default function Maps() {
                 longitude: endingPosition.long,
               },
             ]}
-            strokeColor="#00CED1" // fallback for when `strokeColors` is not supported by the map-provider
+            strokeColor="#00CED1"
             strokeWidth={6}
           />
         )}
       </MapView>
-      <View
-        style={{
-          position: "absolute",
-          right: 10,
-          bottom: 20,
-          borderRadius: 30,
-        }}
-      >
+      <View style={[{zIndex:99999999,position: 'absolute',bottom:35,right:15}]}>
+        <TouchableOpacity style={[styles.shadow,{ backgroundColor:'#fff',padding:10,borderRadius:50,}]} onPress={emergencyFun}>
+          <Image resizeMode={'contain'} source={ require('../../assets/images/emergencyicon.png') } style={{width:35,height:35 }} />
+        </TouchableOpacity>
       </View>
+
       <BottomSheet
         ref={bottomSheetRef}
         bottomInset={0}
@@ -400,7 +420,6 @@ export default function Maps() {
         onChange={handleSheetChanges}
       >
         <View style={stylez.contentContainer}>
-          {/* <Text style={{ marginBottom: 8 }}>Locations</Text> */}
           {getNearbyPlaces.isLoading && <Text>Loading places</Text>}
           {getNearbyPlaces.isError && <Text>Error Loading Places</Text>}
           {getNearbyPlaces.data && (
@@ -415,6 +434,7 @@ export default function Maps() {
           )}
         </View>
       </BottomSheet>
+      
     </SafeAreaView>
   );
 }

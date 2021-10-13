@@ -35,3 +35,8 @@ export interface IUpdateUserRequest {
 export interface ILogoutRequest {
   device?: string;
 }
+
+export interface IemergencyRequest{
+  longt:string;
+	lat:string;
+}

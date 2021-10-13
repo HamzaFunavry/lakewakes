@@ -18,6 +18,7 @@ const getFmcToken = async()=>{
         console.log('============fmcToken========================');
         console.log(fmcToken);
         console.log('=============fmcToken=======================');
+        global.token=fmcToken
     }
     catch (err){
         console.log(err);
@@ -26,7 +27,7 @@ const getFmcToken = async()=>{
 
 export const notificationListener = async ()=>{
     messaging().onNotificationOpenedApp(remoteMessage => {
-        console.log( 'Notification caused app to open from background state:', remoteMessage.notification );
+      console.log( 'Notification caused app to open from background state:', remoteMessage.notification );
     });
     messaging().getInitialNotification().then(remoteMessage => {
       console.log(remoteMessage);

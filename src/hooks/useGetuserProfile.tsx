@@ -24,4 +24,26 @@ export function usegetUserProfile<T>(
   );
 }
 
+function getNotificationRequest<T>() {
+  return http.get<T>('/getAllNotificationsForUser').then((res) => {
+      console.log(res);
+      if (res.status === 200) {
+        return res.data;
+      } else {
+        throw new Error('Could not get form data. Something went wrong');
+      }
+    }).catch((err)=>{
+      console.log(err.response);
+      throw new Error(err.response.data.message);
+    });
+}
 
+export function useGetNotification<T>(
+  options?: UseQueryOptions<T, Error, T>,
+) {
+  return useQuery(
+    ['getAllNotificationsForUser'],
+    () => getNotificationRequest<T>(),
+    options,
+  );
+}

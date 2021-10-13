@@ -10,26 +10,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { AuthFlow, MainFlow} from './Navigators';
 import { loadUserFromStorage } from './src/store/userSlice';
 import messaging from '@react-native-firebase/messaging';
+import { notificationListener, requestUserPermission } from './src/helper/NotificationService';
 const queryClient = new QueryClient();
-async function requestUserPermission() {
-  const authStatus = await messaging().requestPermission();
-  const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-  if (enabled) {
-    console.log('Authorization status:', authStatus);
-    const token = await messaging().getToken();
-    console.log('====================================');
-    console.log(token);
-    console.log('====================================');
-  }
-}
 function App() {
   useEffect(() => {
     requestUserPermission();
+    notificationListener();
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      Alert.alert('Emergency Notification', remoteMessage.notification.body);
     });
     return unsubscribe;
   }, []);

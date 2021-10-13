@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface NavigationAppTests : XCTestCase
+@interface LakeWakesTests : XCTestCase
 
 @end
 
-@implementation NavigationAppTests
+@implementation LakeWakesTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
 {

@@ -18,9 +18,12 @@ import ChangePassword from './src/modules/MainFLow/ChangePassword';
 import Privacy from './src/modules/MainFLow/Privacy';
 import Share from 'react-native-share';
 import ForgotPasswordCode from './src/modules/Auth/ForgotPasswordCode';
+import Notification from './src/modules/MainFLow/Notification';
+import EmergencyMap from './src/modules/MainFLow/EmergencyMap';
+
 const AuthStack = createStackNavigator();
 const DrawerStack = createDrawerNavigator();
-
+const Stack = createStackNavigator();
 // Logout Function 
 function CustomDrawerContent(props) {
   const dispatch = useDispatch();
@@ -108,6 +111,29 @@ export function AuthFlow() {
     </AuthStack.Navigator>
   );
 }
+function NotificationStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Notification"
+        options={{ headerShown: false }}
+        component={Notification}
+      />
+      <Stack.Screen
+        name="EmergencyMap"
+        options={{
+          title: 'Emergency Map',
+          headerBackTitleVisible:false,
+          headerTintColor: '#fff', 
+          headerStyle: {
+            backgroundColor: '#2856a2',
+          }
+        }}
+        component={EmergencyMap}
+      />
+    </Stack.Navigator>
+  );
+}
 export function MainFlow() {
   const userState = useAppSelector(state => state.user);
   return (
@@ -152,6 +178,18 @@ export function MainFlow() {
         component={EditProfile}
       />
       <DrawerStack.Screen
+        name="Notification"
+        options={{
+          title: 'Notification',
+          headerStyle: {
+            backgroundColor: '#f4f6fa',
+            elevation: 0,
+            shadowColor: 'transparent',
+          }
+        }}
+        component={NotificationStack}
+      />
+      <DrawerStack.Screen
         name="ChangePassword"
         options={{
           title: 'ChangePassword',
@@ -175,18 +213,6 @@ export function MainFlow() {
         }}
         component={Terms}
       />
-      {/* <DrawerStack.Screen
-        name="Privacy"
-        options={{
-          title: 'Privacy Policy',
-          headerStyle: {
-            backgroundColor: '#f4f6fa',
-            elevation: 0,
-            shadowColor: 'transparent',
-          }
-        }}
-        component={Privacy}
-      /> */}
 
     </DrawerStack.Navigator>
   );
